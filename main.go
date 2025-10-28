@@ -32,7 +32,7 @@ func main() {
 }
 
 func unpackString(str string) (string, error) {
-	res := make([]rune, 0)
+	var b strings.Builder
 	escape := false
 	strRune := []rune(str)
 	for i := 0; i < len(strRune); i++ {
@@ -42,17 +42,15 @@ func unpackString(str string) (string, error) {
 		}
 
 		if !isDigit(strRune[i]) || escape {
-			res = append(res, strRune[i])
-
 			escape = false
 			numStart := i + 1
 			j := numStart
 
 			if numStart < len(strRune) && strRune[numStart] == '0' {
-				res = res[:len(res)-1]
 				i = numStart
 				continue
 			}
+			b.WriteRune(strRune[i])
 
 			for j < len(strRune) && isDigit(strRune[j]) {
 				j++
@@ -64,7 +62,7 @@ func unpackString(str string) (string, error) {
 					return "", err
 				}
 				for k := 1; k < n; k++ {
-					res = append(res, strRune[numStart-1])
+					b.WriteRune(strRune[numStart-1])
 				}
 			}
 			i = j - 1
@@ -72,7 +70,7 @@ func unpackString(str string) (string, error) {
 			return "", errors.New("invalid string")
 		}
 	}
-	return string(res), nil
+	return b.String(), nil
 }
 
 func isDigit(r rune) bool {
