@@ -1,15 +1,34 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"strconv"
+	"strings"
 )
 
+func readInput() (string, error) {
+	reader := bufio.NewReader(os.Stdin)
+	str, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(str), nil
+}
+
 func main() {
-	str, err := unpackString("a0b12")
-	fmt.Println(str)
-	fmt.Println(err)
+	str, err := readInput()
+	if err != nil {
+		log.Fatal(err)
+	}
+	unpacked, err := unpackString(str)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(unpacked)
 }
 
 func unpackString(str string) (string, error) {
