@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	str, err := unpackString("132")
+	str, err := unpackString("a0b12")
 	fmt.Println(str)
 	fmt.Println(err)
 }
@@ -24,9 +24,16 @@ func unpackString(str string) (string, error) {
 
 		if !isDigit(strRune[i]) || escape {
 			res = append(res, strRune[i])
+
 			escape = false
 			numStart := i + 1
 			j := numStart
+
+			if numStart < len(strRune) && strRune[numStart] == '0' {
+				res = res[:len(res)-1]
+				i = numStart
+				continue
+			}
 
 			for j < len(strRune) && isDigit(strRune[j]) {
 				j++
