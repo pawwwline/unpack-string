@@ -18,6 +18,8 @@ func TestUnpackString(t *testing.T) {
 		{"qwe\\4\\5", "qwe45", false},
 		{"qwe\\45", "qwe44444", false},
 		{"", "", false},
+		{"a2", "aa", false},
+		{"ор5", "оррррр", false},
 	}
 
 	for _, tt := range tests {

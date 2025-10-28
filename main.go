@@ -32,26 +32,31 @@ func main() {
 }
 
 func unpackString(str string) (string, error) {
+	//накапливаем результат в буфер
 	var b strings.Builder
 	escape := false
 	strRune := []rune(str)
 	for i := 0; i < len(strRune); i++ {
 		if strRune[i] == '\\' {
 			escape = true
+			//обновляем флаг и пропускаем эту итерацию
 			continue
 		}
-
+		//основная проверка
 		if !isDigit(strRune[i]) || escape {
 			escape = false
+			//отмечаем гипотетическое начало числовой подстроки
 			numStart := i + 1
 			j := numStart
 
+			//при строке a0 - распаковываем в ""
 			if numStart < len(strRune) && strRune[numStart] == '0' {
 				i = numStart
 				continue
 			}
 			b.WriteRune(strRune[i])
 
+			//проверяем цифры ли
 			for j < len(strRune) && isDigit(strRune[j]) {
 				j++
 			}
