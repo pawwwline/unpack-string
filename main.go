@@ -1,49 +1,54 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 )
 
 func main() {
-	str := unpackString("")
+	str, err := unpackString("132")
 	fmt.Println(str)
-
+	fmt.Println(err)
 }
-func unpackString(str string) string {
-	res := make([]byte, 0)
-	ints := map[rune]struct{}{'1': {}, '2': {}, '3': {}, '4': {}, '5': {}, '6': {}, '7': {}, '8': {}, '9': {}, '0': {}}
-	l, r := 0, 0
-	for r < len(str) {
-		_, isDigit := ints[rune(str[r])]
-		if !isDigit {
-			l = r
-			res = append(res, str[l])
-			r++
+
+func unpackString(str string) (string, error) {
+	res := make([]rune, 0)
+	escape := false
+	strRune := []rune(str)
+	for i := 0; i < len(strRune); i++ {
+		if strRune[i] == '\\' {
+			escape = true
 			continue
 		}
-		digitStart := r
-		for r < len(str) {
-			_, isDigit = ints[rune(str[r])]
-			if !isDigit {
-				break
-			}
-			r++
-		}
 
-		numStr := str[digitStart:r]
-		n, err := strconv.Atoi(numStr)
-		if err != nil {
-			return ""
-		}
+		if !isDigit(strRune[i]) || escape {
+			res = append(res, strRune[i])
+			escape = false
+			numStart := i + 1
+			j := numStart
 
-		_, isDigit = ints[rune(str[l])]
-		if !isDigit {
-			for i := 1; i < n; i++ {
-				res = append(res, str[l])
+			for j < len(strRune) && isDigit(strRune[j]) {
+				j++
 			}
+
+			if numStart < j {
+				n, err := strconv.Atoi(string(strRune[numStart:j]))
+				if err != nil {
+					return "", err
+				}
+				for k := 1; k < n; k++ {
+					res = append(res, strRune[numStart-1])
+				}
+			}
+			i = j - 1
+		} else {
+			return "", errors.New("invalid string")
 		}
-		l = r
 	}
-	return string(res)
+	return string(res), nil
+}
+
+func isDigit(r rune) bool {
+	return r >= '0' && r <= '9'
 }
